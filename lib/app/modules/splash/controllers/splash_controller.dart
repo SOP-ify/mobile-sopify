@@ -1,29 +1,22 @@
-import 'dart:async';
-
 import 'package:get/get.dart';
 
+import '../../../data/services/auth_service.dart';
 import '../../../routes/app_pages.dart';
 
 class SplashController extends GetxController {
-  late Timer _timer;
-
+  /// Navigation is triggered in [onReady] — i.e. after the first frame is
+  /// rendered — which is the reliable place to call `Get.offAllNamed` from a
+  /// splash screen.
   @override
-  void onInit() {
-    super.onInit();
-    _startSplashTimer();
+  void onReady() {
+    super.onReady();
+    _navigate();
   }
 
-  void _startSplashTimer() {
-    _timer = Timer(const Duration(seconds: 2), _goToLogin);
-  }
-
-  void _goToLogin() {
-    Get.offAllNamed(Routes.LOGIN);
-  }
-
-  @override
-  void onClose() {
-    _timer.cancel();
-    super.onClose();
+  Future<void> _navigate() async {
+    await Future.delayed(const Duration(seconds: 2));
+    Get.offAllNamed(
+      AuthService.to.isLoggedIn ? Routes.MAIN : Routes.LOGIN,
+    );
   }
 }

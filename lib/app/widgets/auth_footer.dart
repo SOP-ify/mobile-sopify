@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_styles.dart';
 
+/// Bottom prompt with a tappable link.
+/// e.g. "Belum punya akun? Klik daftar" / "Sudah memiliki akun? Masuk disini".
 class AuthFooter extends StatelessWidget {
   final String prompt;
   final String linkText;
@@ -21,11 +23,11 @@ class AuthFooter extends StatelessWidget {
     return Text.rich(
       TextSpan(
         text: prompt,
-        style: AppTextStyles.body(color: AppColors.gray),
+        style: AppTextStyles.c1Regular,
         children: [
           TextSpan(
             text: linkText,
-            style: AppTextStyles.link(),
+            style: AppTextStyles.c1Medium.copyWith(color: AppColors.primary),
             recognizer: TapGestureRecognizer()..onTap = onTap,
           ),
         ],

@@ -9,20 +9,19 @@ class AppTheme {
   static ThemeData get light {
     final base = ThemeData.light(useMaterial3: true);
     return base.copyWith(
-      scaffoldBackgroundColor: AppColors.white,
-      primaryColor: AppColors.primaryBlue,
+      scaffoldBackgroundColor: AppColors.background,
+      primaryColor: AppColors.primary,
       colorScheme: base.colorScheme.copyWith(
-        primary: AppColors.primaryBlue,
-        secondary: AppColors.deepBlue,
-        surface: AppColors.white,
-        error: AppColors.dangerRed,
+        primary: AppColors.primary,
+        surface: AppColors.surface,
       ),
       textTheme: GoogleFonts.nunitoTextTheme(base.textTheme),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: AppColors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
-        centerTitle: true,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        foregroundColor: AppColors.textPrimary,
       ),
     );
   }

@@ -3,13 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../core/values/app_strings.dart';
-import '../../../global_widgets/app_button.dart';
-import '../../../global_widgets/app_logo.dart';
-import '../../../global_widgets/app_text_field.dart';
-import '../../../global_widgets/auth_footer.dart';
-import '../../../global_widgets/welcome_banner.dart';
+import '../../../widgets/app_logo.dart';
+import '../../../widgets/app_text_field.dart';
+import '../../../widgets/auth_footer.dart';
+import '../../../widgets/password_field.dart';
+import '../../../widgets/primary_button.dart';
+import '../../../widgets/welcome_banner.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
@@ -18,55 +19,66 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl.w,
+            vertical: AppSpacing.lg.h,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const WelcomeBanner(),
-              SizedBox(height: 40.h),
+              SizedBox(height: AppSpacing.xxxl.h),
               Center(child: AppLogo(width: 120.w)),
-              SizedBox(height: 40.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppTextField(
-                      label: AppStrings.emailLabel,
-                      hint: AppStrings.emailHint,
-                      prefixIcon: Icons.mail_outline,
-                      controller: controller.emailController,
-                      keyboardType: TextInputType.emailAddress,
+              SizedBox(height: AppSpacing.xxxl.h),
+              AppTextField(
+                label: 'Alamat Email',
+                hint: 'Alamat Email',
+                controller: controller.emailController,
+                keyboardType: TextInputType.emailAddress,
+                prefixIcon: Icons.mail_outline_rounded,
+              ),
+              SizedBox(height: AppSpacing.lg.h),
+              PasswordField(
+                label: 'Kata Sandi',
+                hint: 'Masukkan kata sandi',
+                controller: controller.passwordController,
+                prefixIcon: Icons.lock_outline_rounded,
+              ),
+              SizedBox(height: AppSpacing.md.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: _RememberMe(controller: controller)),
+                  GestureDetector(
+                    onTap: controller.onForgotPassword,
+                    child: Text(
+                      'Lupa Kata Sandi?',
+                      style: AppTextStyles.c1Medium
+                          .copyWith(color: AppColors.primary),
                     ),
-                    SizedBox(height: 20.h),
-                    AppTextField(
-                      label: AppStrings.passwordLabel,
-                      hint: AppStrings.loginPasswordHint,
-                      prefixIcon: Icons.lock_outline,
-                      isPassword: true,
-                      controller: controller.passwordController,
-                    ),
-                    SizedBox(height: 14.h),
-                    _RememberRow(controller: controller),
-                    SizedBox(height: 24.h),
-                    AppButton(
-                      label: AppStrings.loginButton,
-                      onPressed: controller.login,
-                    ),
-                    SizedBox(height: 24.h),
-                    Center(
-                      child: AuthFooter(
-                        prompt: AppStrings.noAccount,
-                        linkText: AppStrings.registerLink,
-                        onTap: controller.goToRegister,
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                  ],
+                  ),
+                ],
+              ),
+              SizedBox(height: AppSpacing.xl.h),
+              Obx(
+                () => PrimaryButton(
+                  label: 'Masuk',
+                  isLoading: controller.isLoading.value,
+                  onPressed: controller.login,
                 ),
               ),
+              SizedBox(height: AppSpacing.xxl.h),
+              Center(
+                child: AuthFooter(
+                  prompt: 'Belum punya akun? ',
+                  linkText: 'Klik daftar',
+                  onTap: controller.goToRegister,
+                ),
+              ),
+              SizedBox(height: AppSpacing.lg.h),
             ],
           ),
         ),
@@ -75,36 +87,36 @@ class LoginView extends GetView<LoginController> {
   }
 }
 
-class _RememberRow extends StatelessWidget {
+class _RememberMe extends StatelessWidget {
   final LoginController controller;
 
-  const _RememberRow({required this.controller});
+  const _RememberMe({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Obx(
-              () => SizedBox(
-            width: 22.r,
-            height: 22.r,
+          () => SizedBox(
+            width: 22.w,
+            height: 22.w,
             child: Checkbox(
               value: controller.rememberMe.value,
-              onChanged: controller.toggleRememberMe,
-              activeColor: AppColors.deepBlue,
+              onChanged: controller.toggleRemember,
+              activeColor: AppColors.primary,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4.r),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm.r),
               ),
             ),
           ),
         ),
-        SizedBox(width: 8.w),
-        Text(AppStrings.rememberMe, style: AppTextStyles.body(color: AppColors.gray)),
-        const Spacer(),
-        GestureDetector(
-          onTap: controller.forgotPassword,
-          child: Text(AppStrings.forgotPassword, style: AppTextStyles.link()),
+        SizedBox(width: AppSpacing.sm.w),
+        Flexible(
+          child: Text(
+            'Ingat saya?',
+            style: AppTextStyles.c1Regular.copyWith(color: AppColors.textBody),
+          ),
         ),
       ],
     );

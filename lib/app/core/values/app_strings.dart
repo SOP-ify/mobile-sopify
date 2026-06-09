@@ -1,4 +1,3 @@
-/// User-facing strings (Bahasa Indonesia) for SOP-ify auth flow.
 class AppStrings {
   AppStrings._();
 
@@ -31,4 +30,22 @@ class AppStrings {
   static const String registerButton = 'Daftar';
   static const String haveAccount = 'Sudah memiliki akun? ';
   static const String loginLink = 'Masuk disini';
+
+  // Terms & Conditions popup
+  static const String termsTitle = 'Syarat dan Ketentuan';
+  static const String termsUnderstand = 'Saya Mengerti';
+
+  static const String termsSection1Title = '1. Penerimaan Ketentuan';
+  static const String termsSection1Body =
+      'Dengan membuat akun atau menggunakan layanan SOP-ify, Anda '
+      'menyatakan telah membaca, memahami, dan menyetujui seluruh isi '
+      'dalam Syarat dan Ketentuan ini. Layanan kami disediakan khusus '
+      'untuk membantu UMKM mengotomatisasi Standard Operating Procedure (SOP).';
+
+  static const String termsSection2Title = '2. Penggunaan Layanan';
+  static const String termsSection2Body =
+      'Pengguna dilarang menggunakan platform untuk aktivitas ilegal, '
+      'menyebarkan konten berbahaya, atau mencoba merusak integritas sistem '
+      'SOP-ify. Akun bersifat personal dan rahasia; pengguna bertanggung jawab '
+      'penuh atas segala aktivitas yang terjadi di bawah identitas akun mereka.';
 }

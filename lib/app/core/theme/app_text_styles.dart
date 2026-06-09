@@ -7,73 +7,69 @@ import 'app_colors.dart';
 class AppTextStyles {
   AppTextStyles._();
 
-  /// Brand name font (used for the "sop-ify" wordmark when rendered as text).
-  static TextStyle brand({double? fontSize, Color? color}) => GoogleFonts.fredoka(
-        fontSize: (fontSize ?? 32).sp,
+  static TextStyle _font({
+    required double size,
+    required FontWeight weight,
+    double? lineHeight,
+    Color color = AppColors.textPrimary,
+  }) {
+    return GoogleFonts.nunito(
+      fontSize: size.sp,
+      fontWeight: weight,
+      height: lineHeight == null ? null : lineHeight / size,
+      color: color,
+    );
+  }
+
+  /// Brand wordmark font.
+  static TextStyle brand({double size = 28, Color? color}) =>
+      GoogleFonts.fredoka(
+        fontSize: size.sp,
         fontWeight: FontWeight.w600,
-        color: color ?? AppColors.navyDeep,
+        color: color ?? AppColors.brandNavy,
       );
 
-  // H1 — App bar, page title (18-20pt)
-  static TextStyle h1({Color? color}) => GoogleFonts.nunito(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.w700,
-        color: color ?? AppColors.darkCharcoal,
+  // Headings
+  static TextStyle get h1Bold => _font(size: 24, weight: FontWeight.w700);
+  static TextStyle get h2Bold => _font(size: 20, weight: FontWeight.w700);
+  static TextStyle get h3Bold => _font(size: 18, weight: FontWeight.w700);
+  static TextStyle get h4Bold => _font(size: 16, weight: FontWeight.w700);
+
+  // Paragraph
+  static TextStyle get p1Medium => _font(size: 16, weight: FontWeight.w500);
+  static TextStyle get p1Regular =>
+      _font(size: 16, weight: FontWeight.w400, color: AppColors.textBody);
+  static TextStyle get p2Regular => _font(
+        size: 14,
+        weight: FontWeight.w400,
+        lineHeight: 22,
+        color: AppColors.textBody,
+      );
+  static TextStyle get p2Medium => _font(size: 14, weight: FontWeight.w600);
+
+  // Captions
+  static TextStyle get c1Regular =>
+      _font(size: 13, weight: FontWeight.w400, color: AppColors.textSecondary);
+  static TextStyle get c1Medium => _font(size: 13, weight: FontWeight.w600);
+  static TextStyle get c2Regular =>
+      _font(size: 12, weight: FontWeight.w400, color: AppColors.textSecondary);
+  static TextStyle get c2Medium =>
+      _font(size: 12, weight: FontWeight.w600, color: AppColors.textSecondary);
+
+  // Button label
+  static TextStyle get button => _font(
+        size: 16,
+        weight: FontWeight.w700,
+        color: AppColors.white,
       );
 
-  // H2 — Section heading (15-16pt)
-  static TextStyle h2({Color? color}) => GoogleFonts.nunito(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w700,
-        color: color ?? AppColors.darkCharcoal,
-      );
+  // Field label
+  static TextStyle get fieldLabel =>
+      _font(size: 14, weight: FontWeight.w600, color: AppColors.label);
 
-  // Body (13-14pt)
-  static TextStyle body({Color? color}) => GoogleFonts.nunito(
-        fontSize: 14.sp,
-        fontWeight: FontWeight.w400,
-        color: color ?? AppColors.charcoal,
-      );
-
-  // Label & form labels — Nunito SemiBold 14pt
-  static TextStyle label({Color? color}) => GoogleFonts.nunito(
-        fontSize: 14.sp,
-        fontWeight: FontWeight.w600,
-        color: color ?? AppColors.charcoal,
-      );
-
-  // Input text — Nunito Regular 14pt
-  static TextStyle input({Color? color}) => GoogleFonts.nunito(
-        fontSize: 14.sp,
-        fontWeight: FontWeight.w400,
-        color: color ?? AppColors.darkCharcoal,
-      );
-
-  // Placeholder / hint — Nunito Regular italic, #9CA3AF
-  static TextStyle hint({Color? color}) => GoogleFonts.nunito(
-        fontSize: 14.sp,
-        fontWeight: FontWeight.w400,
-        color: color ?? AppColors.lightGrayText,
-      );
-
-  // Button — Nunito Bold 16pt
-  static TextStyle button({Color? color}) => GoogleFonts.nunito(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w700,
-        color: color ?? AppColors.white,
-      );
-
-  // Caption — Badge, timestamp, metadata (11-12pt)
-  static TextStyle caption({Color? color}) => GoogleFonts.nunito(
-        fontSize: 12.sp,
-        fontWeight: FontWeight.w600,
-        color: color ?? AppColors.gray,
-      );
-
-  // Link text
-  static TextStyle link({Color? color}) => GoogleFonts.nunito(
-        fontSize: 14.sp,
-        fontWeight: FontWeight.w700,
-        color: color ?? AppColors.deepBlue,
-      );
+  // Input + hint
+  static TextStyle get input =>
+      _font(size: 14, weight: FontWeight.w400, color: AppColors.textPrimary);
+  static TextStyle get hint =>
+      _font(size: 14, weight: FontWeight.w400, color: AppColors.hint);
 }
