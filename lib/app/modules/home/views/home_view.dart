@@ -8,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/app_dialogs.dart';
 import '../../../core/utils/relative_time.dart';
 import '../../../data/models/sop_model.dart';
+import '../../../routes/app_pages.dart';
 import '../../../widgets/sop_card.dart';
 import '../../botnavbar/controllers/botnavbar_controller.dart';
 import '../controllers/home_controller.dart';
@@ -237,9 +238,7 @@ class _CreateSopCard extends StatelessWidget {
                 child: _CreateButton(
                   icon: Icons.edit_outlined,
                   label: 'Tulis Prosedur',
-                  onTap: () => AppDialogs.info(
-                    'Fitur tulis prosedur segera hadir.',
-                  ),
+                  onTap: () => Get.toNamed(Routes.SOP_CREATE),
                 ),
               ),
               SizedBox(width: AppSpacing.md.w),
@@ -247,9 +246,7 @@ class _CreateSopCard extends StatelessWidget {
                 child: _CreateButton(
                   icon: Icons.mic_none_rounded,
                   label: 'Rekam Suara',
-                  onTap: () => AppDialogs.info(
-                    'Fitur rekam suara segera hadir.',
-                  ),
+                  onTap: () => Get.toNamed(Routes.SOP_CREATE_VOICE),
                 ),
               ),
             ],

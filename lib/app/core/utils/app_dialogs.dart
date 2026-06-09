@@ -6,6 +6,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
 
+/// Centralised user feedback (success / error snackbars).
 class AppDialogs {
   AppDialogs._();
 

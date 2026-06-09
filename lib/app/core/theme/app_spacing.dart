@@ -1,3 +1,7 @@
+/// Spacing, radius and sizing scale (raw values).
+///
+/// Apply ScreenUtil at the call site, e.g. `SizedBox(height: AppSpacing.lg.h)`
+/// or `BorderRadius.circular(AppSpacing.radiusMd.r)`.
 class AppSpacing {
   AppSpacing._();
 

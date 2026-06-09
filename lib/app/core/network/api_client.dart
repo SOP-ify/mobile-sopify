@@ -4,6 +4,11 @@ import 'package:http/http.dart' as http;
 
 import 'api_exception.dart';
 
+/// Thin HTTP wrapper around the SOP-ify backend.
+///
+/// Decodes the JSON envelope, raises [ApiException] with a human-readable
+/// message for non-2xx responses (parsing FastAPI's `detail` field), and keeps
+/// auth concerns out by accepting an optional bearer [token] per call.
 class ApiClient {
   ApiClient._();
 
@@ -23,6 +28,7 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? body,
     String? token,
+    Duration? timeout,
   }) {
     return _send(
       () => http
@@ -31,8 +37,31 @@ class ApiClient {
             headers: _headers(token),
             body: jsonEncode(body ?? <String, dynamic>{}),
           )
-          .timeout(_timeout),
+          .timeout(timeout ?? _timeout),
     );
+  }
+
+  /// Uploads a single file via `multipart/form-data` alongside optional text
+  /// [fields]. Used by the audio-to-text ML endpoint.
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required String filePath,
+    required String fileField,
+    Map<String, String>? fields,
+    String? token,
+    Duration? timeout,
+  }) {
+    return _send(() async {
+      final request = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'));
+      request.headers['Accept'] = 'application/json';
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      fields?.forEach((key, value) => request.fields[key] = value);
+      request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
+      final streamed = await request.send().timeout(timeout ?? _timeout);
+      return http.Response.fromStream(streamed);
+    });
   }
 
   Future<Map<String, dynamic>> put(

@@ -1,3 +1,4 @@
+/// Human-friendly "x ago" label in Indonesian, e.g. "2 jam lalu".
 String timeAgo(DateTime? dt) {
   if (dt == null) return '-';
   final diff = DateTime.now().difference(dt.toLocal());
@@ -11,6 +12,7 @@ String timeAgo(DateTime? dt) {
   return '${(diff.inDays / 365).floor()} tahun lalu';
 }
 
+/// Section header bucket for the Riwayat list, e.g. "HARI INI", "KEMARIN".
 String dayBucket(DateTime? dt) {
   if (dt == null) return 'LAINNYA';
   final now = DateTime.now();

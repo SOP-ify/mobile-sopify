@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// Central color palette for SOP-ify. Reference these instead of hardcoding hex.
+///
+/// Source of truth: SOP-ify Brand Guide (Font & Color Palette) + design mockups.
 class AppColors {
   AppColors._();
 

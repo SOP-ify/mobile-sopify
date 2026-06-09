@@ -1,3 +1,4 @@
+/// Asset path constants for SOP-ify.
 class AppAssets {
   AppAssets._();
 

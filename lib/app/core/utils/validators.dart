@@ -1,3 +1,6 @@
+/// Form validation helpers. Each returns `null` when valid, or an Indonesian
+/// error message otherwise. Display text lives here (inline), not in a shared
+/// strings file.
 class Validators {
   Validators._();
 

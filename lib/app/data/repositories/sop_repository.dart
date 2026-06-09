@@ -1,6 +1,11 @@
 import '../../core/network/api_client.dart';
+import '../../core/network/api_exception.dart';
 import '../models/api_response.dart';
+import '../models/generated_sop.dart';
+import '../models/save_sop_request.dart';
 import '../models/sop_page.dart';
+import '../models/text_to_sop_request.dart';
+import '../models/transcription.dart';
 import '../services/auth_service.dart';
 
 /// SOP history endpoints under `/api/v1/sop`.
@@ -18,5 +23,49 @@ class SopRepository {
       token: _auth.token,
     );
     return ApiResponse.fromJson(json, SopPage.fromJson).dataOrThrow();
+  }
+
+  /// Transcribes a recorded audio file to text via the ML endpoint
+  /// (`POST /api/v1/ml/audio-to-text`). Uses an extended timeout.
+  Future<Transcription> transcribeAudio(
+    String filePath, {
+    String language = 'id',
+  }) async {
+    final json = await _client.postMultipart(
+      '/api/v1/ml/audio-to-text',
+      filePath: filePath,
+      fileField: 'audio',
+      fields: {'language': language},
+      token: _auth.token,
+      timeout: const Duration(seconds: 120),
+    );
+    return ApiResponse.fromJson(json, Transcription.fromJson).dataOrThrow();
+  }
+
+  /// Generates a structured SOP from free-text via the ML endpoint. This call
+  /// can take ~30s, so it uses an extended timeout.
+  Future<GeneratedSop> generateFromText(TextToSopRequest request) async {
+    final json = await _client.post(
+      '/api/v1/ml/text-to-sop',
+      body: request.toJson(),
+      token: _auth.token,
+      timeout: const Duration(seconds: 120),
+    );
+    return ApiResponse.fromJson(json, GeneratedSop.fromJson).dataOrThrow();
+  }
+
+  /// Persists a generated SOP to the user's history.
+  Future<void> save(SaveSopRequest request) async {
+    final json = await _client.post(
+      '/api/v1/sop',
+      body: request.toJson(),
+      token: _auth.token,
+    );
+    final res = ApiResponse.fromJson(json, (m) => m);
+    if (!res.success) {
+      throw ApiException(
+        res.message.isEmpty ? 'Gagal menyimpan SOP.' : res.message,
+      );
+    }
   }
 }

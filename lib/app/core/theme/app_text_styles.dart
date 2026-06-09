@@ -4,6 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
+/// Typography scale for SOP-ify.
+///
+/// Source of truth: SOP-ify Brand Guide.
+/// - Body / heading / label / button -> Nunito (via google_fonts)
+/// - Brand wordmark "sop-ify" -> Fredoka (rounded, playful)
 class AppTextStyles {
   AppTextStyles._();
 
