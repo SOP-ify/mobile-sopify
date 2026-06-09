@@ -1,8 +1,6 @@
 import 'package:get/get.dart';
 
 import '../../../core/network/api_exception.dart';
-import '../../../core/utils/app_dialogs.dart';
-import '../../../data/models/update_profile_request.dart';
 import '../../../data/models/user_model.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../data/repositories/user_repository.dart';
@@ -16,7 +14,6 @@ class ProfilController extends GetxController {
 
   final RxBool isLoading = false.obs;
   final RxBool isLoggingOut = false.obs;
-  final RxBool isSaving = false.obs;
   final RxString error = ''.obs;
   final RxInt totalSop = 0.obs;
 
@@ -41,31 +38,6 @@ class ProfilController extends GetxController {
       error.value = 'Gagal memuat profil. Tarik untuk menyegarkan.';
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  Future<bool> saveProfile({
-    required String fullName,
-    required String jabatan,
-  }) async {
-    isSaving.value = true;
-    try {
-      await _userRepo.updateProfile(
-        UpdateProfileRequest(
-          fullName: fullName.trim().isEmpty ? null : fullName.trim(),
-          jabatan: jabatan.trim().isEmpty ? null : jabatan.trim(),
-        ),
-      );
-      AppDialogs.success('Profil berhasil diperbarui.');
-      return true;
-    } on ApiException catch (e) {
-      AppDialogs.error(e.message);
-      return false;
-    } catch (_) {
-      AppDialogs.error('Gagal memperbarui profil.');
-      return false;
-    } finally {
-      isSaving.value = false;
     }
   }
 

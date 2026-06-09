@@ -6,7 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/user_model.dart';
-import '../../../widgets/primary_button.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/profil_controller.dart';
 
 class ProfilView extends GetView<ProfilController> {
@@ -18,7 +18,7 @@ class ProfilView extends GetView<ProfilController> {
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          _Header(onEdit: () => _openEditSheet(context)),
+          _Header(onEdit: () => Get.toNamed(Routes.EDIT_PROFILE)),
           Expanded(
             child: Obx(() {
               final user = controller.user.value;
@@ -71,21 +71,6 @@ class ProfilView extends GetView<ProfilController> {
     );
   }
 
-  void _openEditSheet(BuildContext context) {
-    final user = controller.user.value;
-    if (user == null) return;
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSpacing.radiusXl.r),
-        ),
-      ),
-      builder: (_) => _EditProfileSheet(controller: controller, user: user),
-    );
-  }
 }
 
 class _Header extends StatelessWidget {
@@ -385,101 +370,3 @@ class _LogoutCard extends StatelessWidget {
   }
 }
 
-class _EditProfileSheet extends StatefulWidget {
-  final ProfilController controller;
-  final UserModel user;
-  const _EditProfileSheet({required this.controller, required this.user});
-
-  @override
-  State<_EditProfileSheet> createState() => _EditProfileSheetState();
-}
-
-class _EditProfileSheetState extends State<_EditProfileSheet> {
-  late final TextEditingController _name =
-      TextEditingController(text: widget.user.fullName);
-  late final TextEditingController _jabatan =
-      TextEditingController(text: widget.user.jabatan ?? '');
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _jabatan.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    return Padding(
-      padding: EdgeInsets.only(
-        left: AppSpacing.lg.w,
-        right: AppSpacing.lg.w,
-        top: AppSpacing.xl.h,
-        bottom: AppSpacing.xl.h + bottomInset,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Edit Profil', style: AppTextStyles.h3Bold),
-          SizedBox(height: AppSpacing.lg.h),
-          _Field(label: 'Nama Lengkap', controller: _name),
-          SizedBox(height: AppSpacing.md.h),
-          _Field(label: 'Jabatan', controller: _jabatan),
-          SizedBox(height: AppSpacing.xl.h),
-          Obx(
-            () => PrimaryButton(
-              label: 'Simpan',
-              isLoading: widget.controller.isSaving.value,
-              onPressed: _save,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _save() async {
-    final ok = await widget.controller.saveProfile(
-      fullName: _name.text,
-      jabatan: _jabatan.text,
-    );
-    if (ok && mounted) Navigator.of(context).pop();
-  }
-}
-
-class _Field extends StatelessWidget {
-  final String label;
-  final TextEditingController controller;
-  const _Field({required this.label, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyles.fieldLabel),
-        SizedBox(height: AppSpacing.xs.h),
-        Container(
-          height: AppSpacing.fieldHeight.h,
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
-          decoration: BoxDecoration(
-            color: AppColors.fieldFill,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
-            border: Border.all(color: AppColors.border),
-          ),
-          alignment: Alignment.center,
-          child: TextField(
-            controller: controller,
-            style: AppTextStyles.input,
-            cursorColor: AppColors.primary,
-            decoration: const InputDecoration(
-              isCollapsed: true,
-              border: InputBorder.none,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
