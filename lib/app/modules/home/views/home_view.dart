@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../core/utils/app_dialogs.dart';
 import '../../../core/utils/relative_time.dart';
 import '../../../data/models/sop_model.dart';
 import '../../../routes/app_pages.dart';
@@ -309,7 +308,7 @@ class _RecentSopCard extends StatelessWidget {
       title: sop.sopName,
       subtitle: sop.kategori,
       meta: '${timeAgo(sop.createdAt)} · ${sop.stepCount} langkah',
-      onTap: () => AppDialogs.info('Detail SOP segera hadir.'),
+      onTap: () => Get.toNamed(Routes.SOP_DETAIL, arguments: sop),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

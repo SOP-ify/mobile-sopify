@@ -3,6 +3,7 @@ import '../../core/network/api_exception.dart';
 import '../models/api_response.dart';
 import '../models/generated_sop.dart';
 import '../models/save_sop_request.dart';
+import '../models/sop_detail.dart';
 import '../models/sop_page.dart';
 import '../models/text_to_sop_request.dart';
 import '../models/transcription.dart';
@@ -23,6 +24,13 @@ class SopRepository {
       token: _auth.token,
     );
     return ApiResponse.fromJson(json, SopPage.fromJson).dataOrThrow();
+  }
+
+  /// Fetches the full saved SOP (including steps) by id from
+  /// `GET /api/v1/sop/{id}`.
+  Future<SopDetail> detail(String id) async {
+    final json = await _client.get('/api/v1/sop/$id', token: _auth.token);
+    return ApiResponse.fromJson(json, SopDetail.fromJson).dataOrThrow();
   }
 
   /// Transcribes a recorded audio file to text via the ML endpoint
