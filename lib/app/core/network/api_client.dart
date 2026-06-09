@@ -1,28 +1,68 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import 'api_exception.dart';
 
-/// Thin HTTP wrapper around the SOP-ify backend.
+/// Thin Dio wrapper around the SOP-ify backend.
 ///
-/// Decodes the JSON envelope, raises [ApiException] with a human-readable
-/// message for non-2xx responses (parsing FastAPI's `detail` field), and keeps
-/// auth concerns out by accepting an optional bearer [token] per call.
+/// Reads the base URL from `.env` (`API_BASE_URL`), decodes the JSON envelope,
+/// and raises [ApiException] with a human-readable message for non-2xx
+/// responses (parsing FastAPI's `detail` field). Auth stays out of here: each
+/// call accepts an optional bearer [token].
 class ApiClient {
-  ApiClient._();
+  ApiClient._() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: _timeout,
+        receiveTimeout: _timeout,
+        sendTimeout: _timeout,
+        responseType: ResponseType.json,
+        // Handle status codes ourselves so error parsing stays in one place.
+        validateStatus: (_) => true,
+        headers: const {'Accept': 'application/json'},
+      ),
+    );
+    // Verbose request/response logging in debug builds only.
+    assert(() {
+      _dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: false,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: false,
+          error: true,
+          compact: true,
+        ),
+      );
+      return true;
+    }());
+  }
 
   static final ApiClient instance = ApiClient._();
 
-  static const String baseUrl =
+  /// Base URL loaded from `.env`. Falls back to the hosted Cloud Run backend
+  /// when the env entry is missing (e.g. `.env` not bundled).
+  static String get baseUrl =>
+      dotenv.maybeGet('API_BASE_URL') ??
       'https://backend-api-464880705922.asia-southeast1.run.app';
+
   static const Duration _timeout = Duration(seconds: 30);
 
-  Map<String, String> _headers(String? token) => {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-      };
+  late final Dio _dio;
+
+  Options _jsonOptions(String? token, {Duration? timeout}) => Options(
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null && token.isNotEmpty)
+            'Authorization': 'Bearer $token',
+        },
+        sendTimeout: timeout,
+        receiveTimeout: timeout,
+      );
 
   Future<Map<String, dynamic>> post(
     String path, {
@@ -31,13 +71,11 @@ class ApiClient {
     Duration? timeout,
   }) {
     return _send(
-      () => http
-          .post(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers(token),
-            body: jsonEncode(body ?? <String, dynamic>{}),
-          )
-          .timeout(timeout ?? _timeout),
+      () => _dio.post(
+        path,
+        data: body ?? <String, dynamic>{},
+        options: _jsonOptions(token, timeout: timeout),
+      ),
     );
   }
 
@@ -52,15 +90,23 @@ class ApiClient {
     Duration? timeout,
   }) {
     return _send(() async {
-      final request = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'));
-      request.headers['Accept'] = 'application/json';
-      if (token != null && token.isNotEmpty) {
-        request.headers['Authorization'] = 'Bearer $token';
-      }
-      fields?.forEach((key, value) => request.fields[key] = value);
-      request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
-      final streamed = await request.send().timeout(timeout ?? _timeout);
-      return http.Response.fromStream(streamed);
+      final formData = FormData.fromMap(<String, dynamic>{
+        ...?fields,
+        fileField: await MultipartFile.fromFile(filePath),
+      });
+      return _dio.post(
+        path,
+        data: formData,
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+            if (token != null && token.isNotEmpty)
+              'Authorization': 'Bearer $token',
+          },
+          sendTimeout: timeout,
+          receiveTimeout: timeout,
+        ),
+      );
     });
   }
 
@@ -70,53 +116,70 @@ class ApiClient {
     String? token,
   }) {
     return _send(
-      () => http
-          .put(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers(token),
-            body: jsonEncode(body ?? <String, dynamic>{}),
-          )
-          .timeout(_timeout),
+      () => _dio.put(
+        path,
+        data: body ?? <String, dynamic>{},
+        options: _jsonOptions(token),
+      ),
     );
   }
 
   Future<Map<String, dynamic>> delete(String path, {String? token}) {
-    return _send(
-      () => http
-          .delete(Uri.parse('$baseUrl$path'), headers: _headers(token))
-          .timeout(_timeout),
-    );
+    return _send(() => _dio.delete(path, options: _jsonOptions(token)));
   }
 
   Future<Map<String, dynamic>> get(String path, {String? token}) {
-    return _send(
-      () => http
-          .get(Uri.parse('$baseUrl$path'), headers: _headers(token))
-          .timeout(_timeout),
-    );
+    return _send(() => _dio.get(path, options: _jsonOptions(token)));
   }
 
   Future<Map<String, dynamic>> _send(
-    Future<http.Response> Function() request,
+    Future<Response<dynamic>> Function() request,
   ) async {
-    final http.Response res;
+    final Response<dynamic> res;
     try {
       res = await request();
+    } on DioException catch (e) {
+      // A server reply carried by the exception still holds a useful message.
+      final response = e.response;
+      if (response != null) {
+        throw ApiException(
+          _parseError(_decode(response.data)),
+          statusCode: response.statusCode,
+        );
+      }
+      throw ApiException(
+        'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.',
+      );
     } catch (_) {
       throw ApiException(
         'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.',
       );
     }
 
-    final dynamic decoded =
-        res.body.isEmpty ? <String, dynamic>{} : jsonDecode(res.body);
+    final dynamic decoded = _decode(res.data);
+    final int status = res.statusCode ?? 0;
 
-    if (res.statusCode >= 200 && res.statusCode < 300) {
+    if (status >= 200 && status < 300) {
       if (decoded is Map<String, dynamic>) return decoded;
       return <String, dynamic>{'data': decoded};
     }
 
-    throw ApiException(_parseError(decoded), statusCode: res.statusCode);
+    throw ApiException(_parseError(decoded), statusCode: status);
+  }
+
+  /// Normalises a Dio response body to decoded JSON regardless of whether Dio
+  /// already parsed it or handed back a raw string.
+  dynamic _decode(dynamic data) {
+    if (data == null) return <String, dynamic>{};
+    if (data is String) {
+      if (data.isEmpty) return <String, dynamic>{};
+      try {
+        return jsonDecode(data);
+      } catch (_) {
+        return <String, dynamic>{'message': data};
+      }
+    }
+    return data;
   }
 
   String _parseError(dynamic decoded) {

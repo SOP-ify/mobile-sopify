@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 
 import '../../../core/constants/sop_categories.dart';
@@ -86,6 +87,24 @@ class SopCreateVoiceController extends GetxController
     }
   }
 
+  /// Requests microphone access via permission_handler, guiding the user to the
+  /// app settings screen if they have permanently denied it.
+  Future<bool> _ensureMicPermission() async {
+    var status = await Permission.microphone.status;
+    if (status.isGranted) return true;
+    status = await Permission.microphone.request();
+    if (status.isGranted) return true;
+    if (status.isPermanentlyDenied) {
+      AppDialogs.error(
+        'Izin mikrofon diblokir. Aktifkan lewat Pengaturan aplikasi.',
+      );
+      await openAppSettings();
+      return false;
+    }
+    AppDialogs.error('Izin mikrofon diperlukan untuk merekam.');
+    return false;
+  }
+
   Future<void> startRecording() async {
     if (sopName.isEmpty) {
       AppDialogs.error('Nama SOP wajib diisi sebelum merekam.');
@@ -96,11 +115,7 @@ class SopCreateVoiceController extends GetxController
       return;
     }
 
-    final allowed = await _recorder.hasPermission();
-    if (!allowed) {
-      AppDialogs.error('Izin mikrofon diperlukan untuk merekam.');
-      return;
-    }
+    if (!await _ensureMicPermission()) return;
 
     try {
       final dir = await getTemporaryDirectory();

@@ -9,6 +9,7 @@ import '../../../core/utils/app_dialogs.dart';
 import '../../../core/utils/relative_time.dart';
 import '../../../data/models/sop_model.dart';
 import '../../../routes/app_pages.dart';
+import '../../../widgets/shimmer_box.dart';
 import '../../../widgets/sop_card.dart';
 import '../../botnavbar/controllers/botnavbar_controller.dart';
 import '../controllers/home_controller.dart';
@@ -28,7 +29,7 @@ class HomeView extends GetView<HomeController> {
               if (controller.isLoading.value &&
                   controller.recentSops.isEmpty &&
                   controller.totalSop.value == 0) {
-                return const Center(child: CircularProgressIndicator());
+                return const SopListShimmer();
               }
               return RefreshIndicator(
                 color: AppColors.primary,

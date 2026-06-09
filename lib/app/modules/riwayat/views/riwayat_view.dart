@@ -8,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/app_dialogs.dart';
 import '../../../core/utils/relative_time.dart';
 import '../../../data/models/sop_model.dart';
+import '../../../widgets/shimmer_box.dart';
 import '../../../widgets/sop_card.dart';
 import '../../botnavbar/controllers/botnavbar_controller.dart';
 import '../controllers/riwayat_controller.dart';
@@ -26,7 +27,7 @@ class RiwayatView extends GetView<RiwayatController> {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value && controller.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+                return const SopListShimmer();
               }
               if (controller.error.value.isNotEmpty && controller.isEmpty) {
                 return _CenteredMessage(

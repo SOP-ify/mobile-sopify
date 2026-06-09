@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -6,10 +7,18 @@ import '../models/user_model.dart';
 /// App-wide auth state: persists the bearer token and current user, and exposes
 /// reactive login state. Registered once (see `main.dart`) and resolved with
 /// `AuthService.to`.
+///
+/// The token is sensitive, so it lives in [FlutterSecureStorage]
+/// (Keystore / Keychain backed). The non-sensitive user profile stays in
+/// [GetStorage] for cheap synchronous reads.
 class AuthService extends GetxService {
   static AuthService get to => Get.find<AuthService>();
 
+  final FlutterSecureStorage _secure = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
   final GetStorage _box = GetStorage();
+
   static const String _kToken = 'access_token';
   static const String _kUser = 'user';
 
@@ -20,7 +29,7 @@ class AuthService extends GetxService {
   bool get isLoggedIn => _token != null && _token!.isNotEmpty;
 
   Future<AuthService> init() async {
-    _token = _box.read<String>(_kToken);
+    _token = await _secure.read(key: _kToken);
     final dynamic storedUser = _box.read(_kUser);
     if (storedUser is Map) {
       currentUser.value =
@@ -31,7 +40,7 @@ class AuthService extends GetxService {
 
   Future<void> saveSession({required String token, UserModel? user}) async {
     _token = token;
-    await _box.write(_kToken, token);
+    await _secure.write(key: _kToken, value: token);
     if (user != null) {
       currentUser.value = user;
       await _box.write(_kUser, user.toJson());
@@ -46,7 +55,7 @@ class AuthService extends GetxService {
   Future<void> clear() async {
     _token = null;
     currentUser.value = null;
-    await _box.remove(_kToken);
+    await _secure.delete(key: _kToken);
     await _box.remove(_kUser);
   }
 }
