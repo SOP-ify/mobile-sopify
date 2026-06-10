@@ -31,6 +31,8 @@ class SopCreateVoiceController extends GetxController
 
   static const String style = 'fine_tune';
   static const int maxRecordSeconds = 300;
+  static const int maxCatatan = 1500;
+
 
   final TextEditingController sopNameController = TextEditingController();
   final TextEditingController transcriptController = TextEditingController();

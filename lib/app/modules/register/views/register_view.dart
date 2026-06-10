@@ -1,4 +1,4 @@
-import 'package:flutter/gestures.dart';
+﻿import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -53,6 +53,7 @@ class RegisterView extends GetView<RegisterController> {
                 hint: 'Masukan No Telepon',
                 controller: controller.phoneController,
                 keyboardType: TextInputType.phone,
+                prefixText: '+62 ',
               ),
               SizedBox(height: AppSpacing.lg.h),
               PasswordField(

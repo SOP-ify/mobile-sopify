@@ -50,11 +50,12 @@ class SopStepIndicator extends StatelessWidget {
         Row(
           children: [
             for (int i = 0; i < 3; i++) ...[
-              SizedBox(
-                width: 32.r,
+              Expanded(
                 child: Text(
                   labels[i],
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.c2Medium.copyWith(
                     color: _stateFor(i) == _NodeState.upcoming
                         ? AppColors.navInactive
@@ -64,7 +65,6 @@ class SopStepIndicator extends StatelessWidget {
                   ),
                 ),
               ),
-              if (i < 2) const Expanded(child: SizedBox.shrink()),
             ],
           ],
         ),

@@ -10,6 +10,7 @@ InputDecoration appInputDecoration({
   String? hint,
   Widget? prefixIcon,
   Widget? suffixIcon,
+  String? prefixText,
   Color? fillColor,
 }) {
   OutlineInputBorder borderOf(Color color) => OutlineInputBorder(
@@ -24,6 +25,8 @@ InputDecoration appInputDecoration({
     hintText: hint,
     hintStyle: AppTextStyles.hint,
     prefixIcon: prefixIcon,
+    prefixText: prefixText,
+    prefixStyle: prefixText != null ? AppTextStyles.input : null,
     suffixIcon: suffixIcon,
     contentPadding: EdgeInsets.symmetric(
       horizontal: AppSpacing.lg.w,

@@ -32,6 +32,17 @@ class SopInputForm extends StatelessWidget {
                   controller: controller.sopNameController,
                 ),
                 SizedBox(height: AppSpacing.xl.h),
+                Text('Bidang usaha', style: AppTextStyles.fieldLabel),
+                SizedBox(height: AppSpacing.md.h),
+                Obx(
+                      () => SopCategoryChips(
+                    categories: controller.categories,
+                    selected: controller.selectedKategori.value,
+                    onSelect: controller.selectKategori,
+                    horizontal: true,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.xl.h),
                 Text(
                   'Tulis prosedur kerja Anda',
                   style: AppTextStyles.fieldLabel,
@@ -56,15 +67,6 @@ class SopInputForm extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: AppSpacing.lg.h),
-                Text('Bidang usaha', style: AppTextStyles.fieldLabel),
-                SizedBox(height: AppSpacing.md.h),
-                Obx(
-                  () => SopCategoryChips(
-                    categories: controller.categories,
-                    selected: controller.selectedKategori.value,
-                    onSelect: controller.selectKategori,
-                  ),
-                ),
                 SizedBox(height: AppSpacing.xl.h),
                 const _InfoBanner(),
               ],

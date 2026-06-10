@@ -13,6 +13,7 @@ class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final IconData? prefixIcon;
+  final String? prefixText;
   final Color? fillColor;
   final bool readOnly;
   final VoidCallback? onTap;
@@ -24,6 +25,7 @@ class AppTextField extends StatelessWidget {
     this.controller,
     this.keyboardType,
     this.prefixIcon,
+    this.prefixText,
     this.fillColor,
     this.readOnly = false,
     this.onTap,
@@ -47,6 +49,7 @@ class AppTextField extends StatelessWidget {
             prefixIcon: prefixIcon == null
                 ? null
                 : Icon(prefixIcon, color: AppColors.iconMuted, size: 20.sp),
+            prefixText: prefixText,
           ),
         ),
       ],

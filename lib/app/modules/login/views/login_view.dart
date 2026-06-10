@@ -74,7 +74,7 @@ class LoginView extends GetView<LoginController> {
               Center(
                 child: AuthFooter(
                   prompt: 'Belum punya akun? ',
-                  linkText: 'Klik daftar',
+                  linkText: 'Daftar',
                   onTap: controller.goToRegister,
                 ),
               ),

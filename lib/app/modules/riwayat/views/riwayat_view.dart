@@ -10,7 +10,6 @@ import '../../../data/models/sop_model.dart';
 import '../../../routes/app_pages.dart';
 import '../../../widgets/shimmer_box.dart';
 import '../../../widgets/sop_card.dart';
-import '../../botnavbar/controllers/botnavbar_controller.dart';
 import '../controllers/riwayat_controller.dart';
 
 class RiwayatView extends GetView<RiwayatController> {
@@ -108,19 +107,6 @@ class _Header extends StatelessWidget {
           ),
           child: Row(
             children: [
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  if (Get.isRegistered<BotNavBarController>()) {
-                    Get.find<BotNavBarController>().changePage(0);
-                  }
-                },
-                child: Icon(
-                  Icons.arrow_back_rounded,
-                  color: AppColors.white,
-                  size: 24.sp,
-                ),
-              ),
               SizedBox(width: AppSpacing.md.w),
               Text(
                 'Riwayat',

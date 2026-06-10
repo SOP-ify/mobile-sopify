@@ -52,11 +52,12 @@ class RegisterController extends GetxController {
 
     isLoading.value = true;
     try {
+      final phoneNumber = '62${phoneController.text.trim()}';
       await _repository.register(
         RegisterRequest(
           fullName: nameController.text.trim(),
           email: emailController.text.trim(),
-          phoneNumber: phoneController.text.trim(),
+          phoneNumber: phoneNumber,
           password: passwordController.text,
           agreeToTerms: agreeToTerms.value,
         ),

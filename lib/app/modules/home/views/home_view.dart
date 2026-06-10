@@ -112,7 +112,6 @@ class _Header extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.bolt_rounded, color: AppColors.white, size: 26.sp),
               SizedBox(width: AppSpacing.sm.w),
               Text(
                 'SOP-ify',
