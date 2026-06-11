@@ -1,3 +1,5 @@
+import '../../core/utils/server_time.dart';
+
 /// A SOP-ify user as returned by `/auth/me`, `/user/me`, login and register.
 class UserModel {
   final String id;
@@ -29,20 +31,18 @@ class UserModel {
       username: json['username']?.toString(),
       jabatan: json['jabatan']?.toString(),
       isActive: json['is_active'] == true,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.tryParse(json['created_at'].toString()),
+      createdAt: parseServerDateTime(json['created_at']),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'full_name': fullName,
-        'email': email,
-        'phone_number': phoneNumber,
-        'username': username,
-        'jabatan': jabatan,
-        'is_active': isActive,
-        'created_at': createdAt?.toIso8601String(),
-      };
+    'id': id,
+    'full_name': fullName,
+    'email': email,
+    'phone_number': phoneNumber,
+    'username': username,
+    'jabatan': jabatan,
+    'is_active': isActive,
+    'created_at': createdAt?.toIso8601String(),
+  };
 }

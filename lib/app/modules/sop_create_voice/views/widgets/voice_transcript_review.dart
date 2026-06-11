@@ -59,6 +59,7 @@ class VoiceTranscriptReview extends StatelessWidget {
                 SizedBox(height: AppSpacing.sm.h),
                 TextField(
                   controller: controller.transcriptController,
+                  maxLength: 1500,
                   maxLines: 10,
                   minLines: 6,
                   style: AppTextStyles.input,

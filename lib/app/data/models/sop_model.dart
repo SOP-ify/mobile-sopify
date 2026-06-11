@@ -1,3 +1,5 @@
+import '../../core/utils/server_time.dart';
+
 /// A single SOP as returned in the `GET /api/v1/sop` list.
 class SopModel {
   final String id;
@@ -26,10 +28,8 @@ class SopModel {
       kategori: (json['kategori'] ?? '').toString(),
       style: (json['style'] ?? '').toString(),
       stepCount:
-          (json['step_count'] is num) ? (json['step_count'] as num).toInt() : 0,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.tryParse(json['created_at'].toString()),
+      (json['step_count'] is num) ? (json['step_count'] as num).toInt() : 0,
+      createdAt: parseServerDateTime(json['created_at']),
     );
   }
 }

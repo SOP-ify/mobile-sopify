@@ -1,3 +1,4 @@
+import '../../core/utils/server_time.dart';
 import 'generated_sop.dart';
 import 'sop_step.dart';
 
@@ -30,9 +31,9 @@ class SopDetail {
     final dynamic raw = json['steps'];
     final steps = raw is List
         ? raw
-            .whereType<Map>()
-            .map((e) => SopStep.fromJson(Map<String, dynamic>.from(e)))
-            .toList()
+        .whereType<Map>()
+        .map((e) => SopStep.fromJson(Map<String, dynamic>.from(e)))
+        .toList()
         : <SopStep>[];
     return SopDetail(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
@@ -45,19 +46,17 @@ class SopDetail {
       stepCount: (json['step_count'] is num)
           ? (json['step_count'] as num).toInt()
           : steps.length,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.tryParse(json['created_at'].toString()),
+      createdAt: parseServerDateTime(json['created_at']),
     );
   }
 
   /// Adapts this saved SOP to the [GeneratedSop] shape so it can reuse the
   /// shared share-text builder.
   GeneratedSop get asGenerated => GeneratedSop(
-        sop: sop,
-        steps: steps,
-        stepCount: stepCount,
-        valid: true,
-        attempt: 1,
-      );
+    sop: sop,
+    steps: steps,
+    stepCount: stepCount,
+    valid: true,
+    attempt: 1,
+  );
 }

@@ -308,30 +308,30 @@ class _RecentSopCard extends StatelessWidget {
       subtitle: sop.kategori,
       meta: '${timeAgo(sop.createdAt)} · ${sop.stepCount} langkah',
       onTap: () => Get.toNamed(Routes.SOP_DETAIL, arguments: sop),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm.w,
-              vertical: 2.h,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.successBg,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm.r),
-            ),
-            child: Text(
-              'AKTIF',
-              style: AppTextStyles.c2Medium.copyWith(color: AppColors.success),
-            ),
-          ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.iconMuted,
-            size: 20.sp,
-          ),
-        ],
-      ),
+      // trailing: Row(
+      //   mainAxisSize: MainAxisSize.min,
+      //   children: [
+      //     Container(
+      //       padding: EdgeInsets.symmetric(
+      //         horizontal: AppSpacing.sm.w,
+      //         vertical: 2.h,
+      //       ),
+      //       decoration: BoxDecoration(
+      //         color: AppColors.successBg,
+      //         borderRadius: BorderRadius.circular(AppSpacing.radiusSm.r),
+      //       ),
+      //       child: Text(
+      //         'AKTIF',
+      //         style: AppTextStyles.c2Medium.copyWith(color: AppColors.success),
+      //       ),
+      //     ),
+      //     Icon(
+      //       Icons.chevron_right_rounded,
+      //       color: AppColors.iconMuted,
+      //       size: 20.sp,
+      //     ),
+      //   ],
+      // ),
     );
   }
 }
