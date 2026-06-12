@@ -1,6 +1,3 @@
-/// Body for `POST /api/v1/ml/text-to-sop`.
-///
-/// [style] is fixed to `fine_tune` for this app's text-to-SOP flow.
 class TextToSopRequest {
   final String sopName;
   final String kategori;
@@ -15,7 +12,7 @@ class TextToSopRequest {
     required this.catatan,
     this.style = 'fine_tune',
     this.maxNewTokens = 512,
-    this.temperature = 0.7,
+    this.temperature = 0.4,
   });
 
   Map<String, dynamic> toJson() => {
