@@ -9,6 +9,8 @@ import '../../sop_create/views/widgets/sop_processing.dart';
 import '../../sop_create/views/widgets/sop_result.dart';
 import '../../sop_create/views/widgets/sop_step_indicator.dart';
 import '../controllers/sop_create_voice_controller.dart';
+import '../../../routes/app_pages.dart';
+import '../../botnavbar/controllers/botnavbar_controller.dart';
 import 'widgets/voice_record_form.dart';
 import 'widgets/voice_transcript_review.dart';
 
@@ -16,6 +18,13 @@ class SopCreateVoiceView extends GetView<SopCreateVoiceController> {
   const SopCreateVoiceView({super.key});
 
   static const List<String> _labels = ['Rekam Suara', 'Transkripsi', 'Generate'];
+
+  void _goToHome() {
+    if (Get.isRegistered<BotNavBarController>()) {
+      Get.find<BotNavBarController>().changePage(0);
+    }
+    Get.until((route) => route.settings.name == Routes.MAIN);
+  }
 
   String _titleFor(int step, bool generating) {
     switch (step) {
@@ -46,11 +55,11 @@ class SopCreateVoiceView extends GetView<SopCreateVoiceController> {
             elevation: 0,
             centerTitle: false,
             automaticallyImplyLeading: false,
-            leading: (step == 3 && !generating)
+            leading: !busy
                 ? IconButton(
-                    icon: const Icon(Icons.arrow_back, color: AppColors.white),
-                    onPressed: () => Get.back(),
-                  )
+              icon: const Icon(Icons.arrow_back, color: AppColors.white),
+              onPressed: _goToHome,
+            )
                 : null,
             title: Text(
               _titleFor(step, generating),

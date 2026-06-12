@@ -7,11 +7,6 @@ import '../../../../core/theme/app_text_styles.dart';
 
 enum _NodeState { done, active, upcoming }
 
-/// The dynamic "1 — 2 — 3" progress header.
-///
-/// Colors change with [currentStep] (1..3): completed nodes turn green with a
-/// check, the active node is blue, upcoming nodes stay grey. The connectors
-/// between completed steps turn green too.
 class SopStepIndicator extends StatelessWidget {
   final int currentStep;
   final List<String> labels;
@@ -33,41 +28,60 @@ class SopStepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            for (int i = 0; i < 3; i++) ...[
-              _Node(state: _stateFor(i), number: i + 1),
-              if (i < 2)
-                Expanded(
-                  child: _Connector(filled: (i + 1) < currentStep),
-                ),
-            ],
-          ],
-        ),
-        SizedBox(height: AppSpacing.sm.h),
-        Row(
-          children: [
-            for (int i = 0; i < 3; i++) ...[
-              Expanded(
-                child: Text(
-                  labels[i],
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.c2Medium.copyWith(
-                    color: _stateFor(i) == _NodeState.upcoming
-                        ? AppColors.navInactive
-                        : (_stateFor(i) == _NodeState.done
-                            ? AppColors.success
-                            : AppColors.primary),
+        for (int i = 0; i < 3; i++)
+          Expanded(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 32.r,
+                  child: Row(
+                    children: [
+                      // Left half of the connector coming from the previous node.
+                      Expanded(
+                        child: i == 0
+                            ? const SizedBox.shrink()
+                            : _Connector(
+                          filled: i < currentStep,
+                          margin: EdgeInsets.only(right: AppSpacing.xs.w),
+                        ),
+                      ),
+                      _Node(state: _stateFor(i), number: i + 1),
+                      // Right half of the connector going to the next node.
+                      Expanded(
+                        child: i == 2
+                            ? const SizedBox.shrink()
+                            : _Connector(
+                          filled: (i + 1) < currentStep,
+                          margin: EdgeInsets.only(left: AppSpacing.xs.w),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ],
-        ),
+                SizedBox(height: AppSpacing.sm.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs.w),
+                  child: Text(
+                    labels[i],
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    softWrap: true,
+                    overflow: TextOverflow.visible,
+                    style: AppTextStyles.c2Medium.copyWith(
+                      color: _stateFor(i) == _NodeState.upcoming
+                          ? AppColors.navInactive
+                          : (_stateFor(i) == _NodeState.done
+                          ? AppColors.success
+                          : AppColors.primary),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -114,23 +128,24 @@ class _Node extends StatelessWidget {
       child: state == _NodeState.done
           ? Icon(Icons.check_rounded, color: fg, size: 18.sp)
           : Text(
-              '$number',
-              style: AppTextStyles.c1Medium.copyWith(color: fg),
-            ),
+        '$number',
+        style: AppTextStyles.c1Medium.copyWith(color: fg),
+      ),
     );
   }
 }
 
 class _Connector extends StatelessWidget {
   final bool filled;
+  final EdgeInsetsGeometry margin;
 
-  const _Connector({required this.filled});
+  const _Connector({required this.filled, required this.margin});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 2.h,
-      margin: EdgeInsets.symmetric(horizontal: AppSpacing.xs.w),
+      margin: margin,
       color: filled ? AppColors.success : AppColors.border,
     );
   }

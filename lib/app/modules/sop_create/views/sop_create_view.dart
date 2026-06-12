@@ -10,9 +10,18 @@ import 'widgets/sop_input_form.dart';
 import 'widgets/sop_processing.dart';
 import 'widgets/sop_result.dart';
 import 'widgets/sop_step_indicator.dart';
+import '../../../routes/app_pages.dart';
+import '../../botnavbar/controllers/botnavbar_controller.dart';
 
 class SopCreateView extends GetView<SopCreateController> {
   const SopCreateView({super.key});
+
+  void _goToHome() {
+    if (Get.isRegistered<BotNavBarController>()) {
+      Get.find<BotNavBarController>().changePage(0);
+    }
+    Get.until((route) => route.settings.name == Routes.MAIN);
+  }
 
   String _titleFor(int step) {
     switch (step) {
@@ -39,11 +48,11 @@ class SopCreateView extends GetView<SopCreateController> {
             elevation: 0,
             centerTitle: false,
             automaticallyImplyLeading: false,
-            leading: step == 3
+            leading: step != 2
                 ? IconButton(
-                    icon: const Icon(Icons.arrow_back, color: AppColors.white),
-                    onPressed: () => Get.back(),
-                  )
+              icon: const Icon(Icons.arrow_back, color: AppColors.white),
+              onPressed: _goToHome,
+            )
                 : null,
             title: Text(
               _titleFor(step),
